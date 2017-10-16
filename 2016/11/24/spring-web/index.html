@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <meta charset="utf-8">
+    
+    <title>Spring Web应用的最大瑕疵 | 绿豆的成长日记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="众所周知， 现在的Spring框架已经成为构建企业级Java应用事实上的标准了，众多的企业项目都构建在Spring项目及其子项目之上，特别是Java Web项目，很多都使用了Spring并且遵循着Web、Service、Dao这样的分层原则，下层向上层提供服务；不过Petri Kainulainen在其博客中却指出了众多Spring Web应用的最大瑕疵，请继续阅读看看文中所提到的问题是否也出现在">
+<meta name="keywords" content="Spring MVC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Web应用的最大瑕疵">
+<meta property="og:url" content="http://bangwu.github.io/2016/11/24/spring-web/index.html">
+<meta property="og:site_name" content="绿豆的成长日记">
+<meta property="og:description" content="众所周知， 现在的Spring框架已经成为构建企业级Java应用事实上的标准了，众多的企业项目都构建在Spring项目及其子项目之上，特别是Java Web项目，很多都使用了Spring并且遵循着Web、Service、Dao这样的分层原则，下层向上层提供服务；不过Petri Kainulainen在其博客中却指出了众多Spring Web应用的最大瑕疵，请继续阅读看看文中所提到的问题是否也出现在">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-10-16T02:46:35.417Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spring Web应用的最大瑕疵">
+<meta name="twitter:description" content="众所周知， 现在的Spring框架已经成为构建企业级Java应用事实上的标准了，众多的企业项目都构建在Spring项目及其子项目之上，特别是Java Web项目，很多都使用了Spring并且遵循着Web、Service、Dao这样的分层原则，下层向上层提供服务；不过Petri Kainulainen在其博客中却指出了众多Spring Web应用的最大瑕疵，请继续阅读看看文中所提到的问题是否也出现在">
+    
+
+    
+        <link rel="alternate" href="/" title="绿豆的成长日记" type="application/atom+xml" />
+    
+
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+    
+    
+
+
+</head>
+
+<body>
+    <div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">绿豆的成长日记</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/archives">归档</a>
+                
+                    <a class="main-nav-link" href="/categories">分类</a>
+                
+                    <a class="main-nav-link" href="/tags">标签</a>
+                
+                    <a class="main-nav-link" href="/about">about</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar.png" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar.png" />
+            <h2 id="name">吴邦</h2>
+            <h3 id="title">Web Developer &amp; Designer</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>武汉，中国</span>
+            <a id="follow" target="_blank" href="https://github.com/bangwu/">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                4
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                3
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="http://github.com/bangwu" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="rss" class=tooltip>
+                            <i class="fa fa-rss"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-spring-web" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            Spring Web应用的最大瑕疵
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2016/11/24/spring-web/">
+            <time datetime="2016-11-24T00:00:00.000Z" itemprop="datePublished">2016-11-24</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Java/">Java</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/Spring-MVC/">Spring MVC</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h1 id="Spring-Web应用的最大瑕疵"><a href="#Spring-Web应用的最大瑕疵" class="headerlink" title="Spring Web应用的最大瑕疵"></a>Spring Web应用的最大瑕疵</h1><p>众所周知， 现在的Spring框架已经成为构建企业级Java应用事实上的标准了，众多的企业项目都构建在Spring项目及其子项目之上，特别是Java Web项目，很多都使用了Spring并且遵循着Web、Service、Dao这样的分层原则，下层向上层提供服务；不过Petri Kainulainen在其博客中却指出了众多Spring Web应用的最大瑕疵，请继续阅读看看文中所提到的问题是否也出现在你的项目当中</p>
+<p>使用Spring框架构建应用的开发者很乐于谈论依赖注入的好处。但遗憾的是，他们很多人并没有在其应用中很好地利用其优势，如单一职责原则和关注分离原则。如果仔细看看基于Spring的Web应用，你会发现很多都是使用如下这些常见且错误的设计原则来实现的：</p>
+<ul>
+<li>领域模型对象只是用来存储应用的数据。换句话说，领域模型使用了贫血模型这种反模式。</li>
+<li>业务逻辑位于服务层中，管理域对象的数据。</li>
+<li>在服务层中，应用的每个实体对应一个服务类。</li>
+</ul>
+<p>可问题是：如果这种做法很普遍，那为什么说是不对的呢？下面来阐述一下。</p>
+<h2 id="旧习难改"><a href="#旧习难改" class="headerlink" title="旧习难改"></a>旧习难改</h2><p>Spring Web应用之所以看起来是这个样子原因在于这是人们长久以来的做法，旧习难改，特别是在高级开发者或是软件架构师强制开发人员这样做的时候。问题在于这些人非常擅于捍卫自己的观点。他们喜欢的一个论调就是应用应该遵循关注分离原则，因为它被划分成了几个层次，每个层次都有自己具体的职责。</p>
+<p>一个典型的Spring Web应用会有如下几个层次：</p>
+<ul>
+<li>Web层：负责处理用户的输入并向用户返回正确的响应。Web层只会与服务层通信。</li>
+<li>服务层：作为事务边界。它还负责授权并包含了应用的业务逻辑。服务层管理着领域对象模型并且与其他服务及存储层通信。</li>
+<li>存储/数据访问层：负责与所用的数据存储进行通信</li>
+</ul>
+<p>关注分离原则的定义是这样的：关注分离（Soc）是一种将计算机程序划分到不同部分的一种设计原则，这样每一部分都会有单独的关注点。虽然一个典型的Spring Web应用也在一定程度上遵循了这个原则，不过实际情况却是应用拥有一个整体的服务层，它包含了太多的职责了。更具体一些，服务层主要有两个问题：</p>
+<p><strong><em>首先，应用的业务逻辑来自于服务层。</em></strong></p>
+<p>这是个问题，因为业务逻辑散落在服务层。如果需要查看某个业务规则是如何实现的，我们需要先找到它才行，这可不是那么轻松的事情。此外，如果有多个服务类都需要相同的业务规则，那么开发人员很可能会将这个业务规则从一个服务复制到另一个服务中，这会导致维护的梦魇。</p>
+<p><strong><em>其次，每个领域模型类在服务层中都有一个服务类</em></strong></p>
+<p>这违背了单一职责原则：单一职责原则表明每个类都应该只有一个职责，这个职责应该完全被这个类所封装。它的所有服务都应该与这个职责保持一致。</p>
+<p>服务类存在大量的依赖和大量的循环依赖。一个典型的Spring Web应用的服务层没有包含只拥有一个职责的松耦合的服务，它更像是一个紧耦合的大量服务的集合。这使得它很难理解、维护与重用。看起来有点苛刻，不过服务层经常是Spring Web应用最容易出现问题的一环。幸好对我们来说还存在着希望。</p>
+<h2 id="推翻"><a href="#推翻" class="headerlink" title="推翻"></a>推翻</h2><p>目前的状况并不好，不过也不是完全没有希望的。下面我们来看看如何打破旧有的习惯。</p>
+<p><strong><em>首先，我们需要将应用的业务逻辑从服务层移动到领域模型类中</em></strong></p>
+<p>为何要这么做呢，看看下面这个例子：</p>
+<p>假设我是个服务类，你是个领域模型对象。如果我告诉你从房顶跳下来，那么你是否会拒绝呢？</p>
+<p>将服务层的业务逻辑移动到领域模型类中有如下3个好处：</p>
+<ul>
+<li>根据合理的方式划分代码的职责。服务层会负责应用的逻辑，而领域模型类则负责业务逻辑。</li>
+<li>应用的业务逻辑只会位于一处。如果需要验证特定的业务规则是如何实现的，我们总是知道该去哪里寻找。</li>
+<li>服务层的源代码将会变得更加整洁，再不会包含任何复制粘贴的代码了。</li>
+</ul>
+<p><strong><em>其次，我们需要将特定于实体的服务划分为更小的服务，每个服务只有一个目标。</em></strong></p>
+<p>比如说，如果应用有一个服务类，它为与用户帐户相关的人与操作提供了CRUD操作，那么我们就应该将其划分到两个单独的服务类中：</p>
+<ul>
+<li>第1个服务提供人的CRUD操作。</li>
+<li>第2个服务提供与用户帐户相关的操作。</li>
+</ul>
+<p>这么做有如下3个好处：</p>
+<ul>
+<li>每个服务类都有一套合理的职责。</li>
+<li>每个服务类的依赖会更少，这意味着他们不再是紧耦合的庞然大物了。他们是更加小巧且松耦合的组件。</li>
+<li>服务类更易于理解、维护与重用。</li>
+</ul>
+<p>这两个简单的步骤可以帮助我们清理应用的架构，提升开发者的生产力和幸福度。现在，我们想知道如果所有这些都是必要的，那么该何时解决这些问题呢？</p>
+<h2 id="有时生命是黑白的"><a href="#有时生命是黑白的" class="headerlink" title="有时生命是黑白的"></a>有时生命是黑白的</h2><p>我经常听到有人说我们不应该过多的关注于“架构”，因为我们的应用很小并且很简单。虽然这个论调有一定的正确性，不过我们必须要记住一开始很小的项目最后会变得很大。如果不考虑这种情况，那么一旦发生状况，我们就会陷入到巨大的麻烦当中。在未知的水域中航行可不是个好做法，但我们必须要知道，泰坦尼克号在撞到冰山沉没时是在熟悉的航线中航行的。这种事情也会发生在我们的应用中。当事情变得无法控制时，我们必须要有勇气说不。</p>
+<p>如果你打算改变，那么我推荐你阅读一下Olivier Gierke所写的“Whoops! Where did my architecture”（或是观看他在SpringOne2GX上关于这个项目的演讲）。但请注意，习惯的力量还是很强大的。</p>
+<p>原文出自 <a href="http://www.infoq.com/cn/news/2013/11/spring-web-flaw" target="_blank" rel="external">Spring Web应用的最大瑕疵</a></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://bangwu.github.io/2016/11/24/spring-web/" data-id="cj8tqwdun00055jj2r36tkxl3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+    
+        <a href="/2016/08/06/css-style/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">CSS style guide</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/11/24/spring-web/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/Java/">Java</a></p>
+                            <p class="item-title"><a href="/2016/11/24/spring-web/" class="title">Spring Web应用的最大瑕疵</a></p>
+                            <p class="item-date"><time datetime="2016-11-24T00:00:00.000Z" itemprop="datePublished">2016-11-24</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/08/06/css-style/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/前端/">前端</a></p>
+                            <p class="item-title"><a href="/2016/08/06/css-style/" class="title">CSS style guide</a></p>
+                            <p class="item-date"><time datetime="2016-08-06T00:00:00.000Z" itemprop="datePublished">2016-08-06</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/05/31/create-ebook/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/工具/">工具</a></p>
+                            <p class="item-title"><a href="/2016/05/31/create-ebook/" class="title">Create you own ebook</a></p>
+                            <p class="item-date"><time datetime="2016-05-31T00:00:00.000Z" itemprop="datePublished">2016-05-31</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2016/05/30/code-style/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/前端/">前端</a></p>
+                            <p class="item-title"><a href="/2016/05/30/code-style/" class="title">Javascript style guide</a></p>
+                            <p class="item-date"><time datetime="2016-05-30T00:00:00.000Z" itemprop="datePublished">2016-05-30</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/前端/">前端</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具/">工具</a><span class="category-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/11/">十一月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/08/">八月 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a><span class="archive-list-count">2</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CSS/">CSS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring-MVC/">Spring MVC</a><span class="tag-list-count">1</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/CSS/" style="font-size: 10px;">CSS</a> <a href="/tags/JavaScript/" style="font-size: 20px;">JavaScript</a> <a href="/tags/Spring-MVC/" style="font-size: 10px;">Spring MVC</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="http://hexo.io">Hexo</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2017 BangWu<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div>
+</body>
+</html>
