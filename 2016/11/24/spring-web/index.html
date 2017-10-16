@@ -289,7 +289,7 @@
 
 </div>
 
-    <a data-url="http://bangwu.github.io/2016/11/24/spring-web/" data-id="cj8tqwdun00055jj2r36tkxl3" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+    <a data-url="http://bangwu.github.io/2016/11/24/spring-web/" data-id="cj8tqxomz0006f3j2m4z2wipq" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
 <script>
     (function ($) {
         // Prevent duplicate binding
@@ -378,6 +378,10 @@
 
 
     
+    
+        <section id="comments">
+	<div id="commentContainer"></div>
+</section>
     
 
 </section>
@@ -538,6 +542,22 @@
     </div>
 </footer>
         
+    
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script>
+		var gitment = new Gitment({
+			owner: 'bangwu',
+			repo: 'comment',
+			oauth: {
+				client_id: '8191cbec138d04c733ba',
+				client_secret: 'fe4c4c4f269d981ad525ba2964266cc57a90076d',
+			},
+		})
+		gitment.render('commentContainer')
+	</script>
+	
+
 
 
     

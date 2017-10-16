@@ -422,6 +422,22 @@
     </div>
 </footer>
         
+    
+	<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+	<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+	<script>
+		var gitment = new Gitment({
+			owner: 'bangwu',
+			repo: 'comment',
+			oauth: {
+				client_id: '8191cbec138d04c733ba',
+				client_secret: 'fe4c4c4f269d981ad525ba2964266cc57a90076d',
+			},
+		})
+		gitment.render('commentContainer')
+	</script>
+	
+
 
 
     
